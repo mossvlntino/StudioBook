@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Our Location — Say, Cheese!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page: #e9e4d7;
+            --card: #f6f4ee;
+            --ink: #0f0f0e;
+            --accent: #f5b51f;
+            --radius: 28px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: var(--page);
+            font-family: Inter, system-ui, Arial, sans-serif;
+            color: var(--ink)
+        }
+
+        .wrap {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px
+        }
+
+        .panel {
+            width: min(1100px, 100%);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 0 #d2cdc2, 0 18px 36px rgba(0, 0, 0, .08);
+            padding: 24px
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px
+        }
+
+        .title {
+            font-weight: 800;
+            font-size: 24px
+        }
+
+        .back {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #000
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px
+        }
+
+        .box {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 16px;
+            min-height: 260px;
+            overflow: hidden
+        }
+
+        .fill {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block
+        }
+
+        .photo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .addr {
+            padding: 10px 12px;
+            font-weight: 700;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 12px;
+            margin-top: 10px
+        }
+
+        .muted {
+            font-size: 12px;
+            margin-top: 6px;
+            color: #333
+        }
+
+        .street {
+            height: 320px
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+
+            .street {
+                height: 280px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="panel">
+            <div class="top">
+                <button class="back" onclick="history.back()">← Back</button>
+                <div class="title">Our Location</div>
+                <div style="width:88px"></div>
+            </div>
+
+            <div class="grid">
+                <!-- MAP (full inside box) -->
+                <div class="box">
+                    <iframe id="mapFrame" class="fill" loading="lazy" allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+
+                <!-- PHOTO + ADDRESS -->
+                <div>
+                    <div class="box photo">
+                        <img id="buildingPhoto" alt="Building photo">
+                    </div>
+                    <div id="addr" class="addr"></div>
+                </div>
+
+                <!-- STREET VIEW -->
+                <div class="box street" style="grid-column:1 / -1">
+                    <iframe id="streetFrame" class="fill" loading="lazy" allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================
+         CONFIG — ISI BAGIAN INI
+         ========================= */
+
+        // Link embed untuk MAP (peta/satellite view)
+        const MAP_EMBED_URL =
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2473.8762405250213!2d106.78257607485934!3d-6.202163645162884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f6dcc7d2c4ad%3A0x209cb1eef39be168!2sBINUS%20UNIVERSITY%20-%20Anggrek%20Campus!5e1!3m2!1sen!2sid!4v1755673190003!5m2!1sen!2sid";
+
+        // Link embed untuk STREET VIEW
+        const STREET_EMBED_URL =
+            "https://www.google.com/maps/embed?pb=!3m2!1sen!2sid!4v1755673242293!5m2!1sen!2sid!6m8!1m7!1sQj2ktmbwciVt_RzrcN_qxA!2m2!1d-6.201827822179166!2d106.7826719692516!3f265.35686456782196!4f0.378665030227495!5f0.7820865974627469";
+
+        // Alamat
+        const ADDRESS_TEXT =
+            "Universitas BINUS (Bina Nusantara) — Kampus Anggrek";
+
+        // Foto: bisa URL atau file lokal (misal "studio.jpg" di folder yg sama)
+        const BUILDING_IMAGE_SRC =
+            "BINUS.jpg";
+        // contoh lain: "studio.jpg"
+
+        /* =========================
+           SET KE IFRAME & ELEMEN
+           ========================= */
+
+        // alamat
+        document.getElementById("addr").textContent = ADDRESS_TEXT;
+
+        // foto (cek apakah string diawali http/https)
+        if (BUILDING_IMAGE_SRC.startsWith("http")) {
+            document.getElementById("buildingPhoto").src = BUILDING_IMAGE_SRC;
+        } else {
+            // anggap file lokal di folder yang sama
+            document.getElementById("buildingPhoto").src = "./" + BUILDING_IMAGE_SRC;
+        }
+
+        // map & street view
+        document.getElementById("mapFrame").src = MAP_EMBED_URL;
+        document.getElementById("streetFrame").src = STREET_EMBED_URL;
+    </script>
+
+</body>
+
+</html>

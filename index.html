@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Say, Cheese! — Photo Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page: #e9e4d7;
+            --card: #f6f4ee;
+            --ink: #0f0f0e;
+            --accent: #f5b51f;
+            --accent-press: #e2a30e;
+            --radius: 36px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: var(--page);
+            font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--ink)
+        }
+
+        .shell {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 24px
+        }
+
+        .panel {
+            width: min(720px, 100%);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 0 #d2cdc2, 0 20px 40px rgba(0, 0, 0, .06);
+            padding: clamp(20px, 5vw, 36px);
+        }
+
+        .bucket {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px
+        }
+
+        .hero-img {
+            width: min(520px, 90%);
+            aspect-ratio: 16/12;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 8px solid #fff;
+            box-shadow: 0 2px 0 #d0ccc3
+        }
+
+        .title {
+            font-size: clamp(28px, 5vw, 40px);
+            font-weight: 800;
+            letter-spacing: .2px;
+            margin: 0
+        }
+
+        .title .cheese {
+            color: #e2a30e
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--ink);
+            font-size: clamp(16px, 2.6vw, 20px);
+            font-weight: 600
+        }
+
+        .blank {
+            display: inline-block;
+            border-bottom: 4px solid #0f0f0e;
+            min-width: 120px;
+            line-height: 0.8
+        }
+
+        .cta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            width: min(560px, 100%)
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            appearance: none;
+            border: 0;
+            cursor: pointer;
+            width: 100%;
+            padding: 22px 26px;
+            border-radius: 18px;
+            background: var(--accent);
+            color: #000;
+            font-weight: 800;
+            font-size: clamp(18px, 3vw, 24px);
+            box-shadow: 0 10px 0 #0f0f0e;
+            transition: transform .06s ease, box-shadow .06s ease, background .15s;
+            border: 2px solid #000;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 6px 0 #0f0f0e;
+            background: var(--accent-press)
+        }
+
+        .btn.secondary {
+            background: #f5b51f;
+            border: 2px solid #000;
+            box-shadow: 0 10px 0 #0f0f0e;
+            font-weight: 800
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <main class="panel" role="main" aria-label="Home - main menu">
+            <section class="bucket">
+                <img class="hero-img" alt="Cheese logo placeholder"
+                    src="Cheesecake.jpg" />
+                <h1 class="title">Say, <span class="cheese">Cheese!</span></h1>
+                <p class="subtitle">a photo studio in <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+                <div class="cta">
+                    <a class="btn" href="calendar.html">Book Session</a>
+                    <a class="btn secondary" href="location.html">Our Location</a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

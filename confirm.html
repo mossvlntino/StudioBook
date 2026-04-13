@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Say, Cheese! — Confirm Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --page: #e9e4d7;
+            --card: #f6f4ee;
+            --ink: #0f0f0e;
+            --accent: #f5b51f;
+            --radius: 36px;
+            --line: #1a1a1a30;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: var(--page);
+            font-family: Inter, sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: grid;
+            place-items: center
+        }
+
+        .frame {
+            width: min(1120px, 100%);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 0 #d2cdc2, 0 20px 40px rgba(0, 0, 0, .06);
+            padding: clamp(20px, 3.6vw, 36px);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 28px;
+            position: relative;
+        }
+
+        /* left column */
+        .left {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start
+        }
+
+        .logo {
+            width: 230px;
+            height: 170px;
+            background: #fff url('Cheesecake.jpg') center/cover no-repeat;
+            border-radius: 12px
+        }
+
+        .slogan {
+            font-size: 28px;
+            font-weight: 800
+        }
+
+        .slogan span {
+            color: #e2a30e
+        }
+
+        .when {
+            margin-top: 18px
+        }
+
+        .when .day {
+            font-weight: 800;
+            font-size: 22px
+        }
+
+        .when .time {
+            margin-top: 6px;
+            font-weight: 800;
+            font-size: 22px
+        }
+
+        /* vertical divider */
+        .divider {
+            position: absolute;
+            left: 320px;
+            top: 24px;
+            bottom: 24px;
+            width: 2px;
+            background: var(--line);
+        }
+
+        /* right column */
+        .right {
+            padding-left: 8px
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 18px
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px
+        }
+
+        label {
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block
+        }
+
+        .field {
+            background: #e7e7ea;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            width: 100%
+        }
+
+        /* qty inside single grey block */
+        .qty-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-right: 118px;
+        }
+
+        .qty-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font: inherit;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .circle-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            background: #fff;
+            font-weight: 800;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #000;
+            display: grid;
+            place-items: center;
+        }
+
+        .circle-btn:active {
+            transform: translateY(calc(-50% + 2px));
+            box-shadow: 0 2px 0 #000;
+        }
+
+        .circle-btn.plus {
+            right: 18px;
+        }
+
+        .circle-btn.minus {
+            right: 72px;
+        }
+
+        /* Pet radios */
+        .pet-options {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            margin-top: 6px
+        }
+
+        .pet-options label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        /* Voucher with check */
+        .voucher-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .cta.small {
+            font-size: 14px;
+            padding: 8px 16px;
+            box-shadow: 0 3px 0 #000
+        }
+
+        #voucherMsg {
+            margin-top: 6px;
+            font-weight: 700
+        }
+
+        #voucherMsg.ok {
+            color: green
+        }
+
+        #voucherMsg.err {
+            color: #b00020
+        }
+
+        /* buttons row */
+        .cta-wrap {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 16px
+        }
+
+        .cta {
+            background: var(--accent);
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 16px 26px;
+            font-weight: 800;
+            box-shadow: 0 8px 0 #000;
+            cursor: pointer;
+            transition: transform .05s ease, box-shadow .05s ease;
+            font-size: 22px;
+        }
+
+        .cta:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 #000
+        }
+
+        .cta.back {
+            background: #fff
+        }
+
+        @media (max-width: 900px) {
+            .frame {
+                grid-template-columns: 1fr
+            }
+
+            .divider {
+                display: none
+            }
+
+            .right {
+                padding-left: 0
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .35);
+            display: none;
+            place-items: center;
+            z-index: 50;
+        }
+
+        .modal {
+            width: min(520px, 92%);
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 20px;
+            box-shadow: 0 14px 0 #000;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .modal h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .modal p {
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .modal .details {
+            background: #f6f4ee;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            text-align: left;
+            font-weight: 600;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            white-space: pre-line;
+        }
+
+        .modal .cta {
+            font-size: 18px;
+            padding: 12px 20px;
+        }
+
+        .modal .small-note {
+            font-size: 14px;
+            color: #555;
+            margin-top: 6px;
+        }
+
+        .show {
+            display: grid !important;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="frame">
+        <!-- LEFT -->
+        <section class="left">
+            <div class="logo" aria-label="cheese logo"></div>
+            <div class="slogan">Time to <span>Book!</span></div>
+
+            <div class="when">
+                <div class="day" id="prettyDay">—</div>
+                <div class="time" id="prettyTime">—</div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- RIGHT -->
+        <section class="right">
+            <h1 class="title">Confirm Booking</h1>
+
+            <form id="bookingForm">
+                <div>
+                    <label for="name">Name:</label>
+                    <input class="field" id="name" name="name" required />
+                </div>
+
+                <div>
+                    <label for="email">Email:</label>
+                    <input class="field" type="email" id="email" name="email" required />
+                </div>
+
+                <div>
+                    <label for="phone">No. Telp:</label>
+                    <input class="field" id="phone" name="phone" type="tel" pattern="[0-9]+"
+                        inputmode="numeric" required />
+                </div>
+
+                <div>
+                    <label for="count">Jumlah Orang:</label>
+                    <div class="field qty-field">
+                        <input class="qty-input" type="number" id="count" name="count" value="1"
+                            min="1" readonly />
+                        <button type="button" class="circle-btn minus" aria-label="Decrease">−</button>
+                        <button type="button" class="circle-btn plus" aria-label="Increase">+</button>
+                    </div>
+                </div>
+
+                <!-- Pet: Yes / No -->
+                <div>
+                    <label>Pet?</label>
+                    <div class="pet-options">
+                        <label><input type="radio" name="pet" value="Yes"> Yes</label>
+                        <label><input type="radio" name="pet" value="No" checked> No</label>
+                    </div>
+                </div>
+
+                <!-- Voucher: check against VC123 -->
+                <div>
+                    <label for="voucher">Voucher:</label>
+                    <div class="voucher-wrap">
+                        <input class="field" id="voucher" name="voucher" placeholder="Enter voucher code" />
+                        <button type="button" class="cta small" id="checkVoucherBtn">Check</button>
+                    </div>
+                    <div id="voucherMsg"></div>
+                </div>
+
+                <div class="cta-wrap">
+                    <button type="button" class="cta back" onclick="history.back()">← Back</button>
+                    <button class="cta" type="submit" id="submitBtn">Book Session</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <div id="successOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+        <div class="modal">
+            <h2 id="successTitle">🎉 Booking Berhasil!</h2>
+            <p>Terima kasih. Berikut ringkasannya:</p>
+            <div id="successDetails" class="details"></div>
+            <button id="successOk" class="cta">Kembali ke Halaman Awal</button>
+        </div>
+    </div>
+
+    <script>
+        // Read ?date=YYYY-MM-DD&time=HH:MM (24h). If &end provided, use it; else +1 hour.
+        const p = new URLSearchParams(location.search);
+        const isoDate = p.get('date');
+        const startHM = p.get('time') || p.get('start');
+        const endHMParam = p.get('end');
+
+        function pad(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function toDateSafe(iso) {
+            const m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.exec(iso || '');
+            if (!m) return null;
+            const d = new Date(+m[1], +m[2] - 1, +m[3]);
+            return (d.getFullYear() == +m[1] && d.getMonth() == +m[2] - 1 && d.getDate() == +m[3]) ? d : null;
+        }
+
+        function addOneHour(hm) {
+            const [H, M] = hm.split(':').map(Number);
+            const d = new Date(2000, 0, 1, H, M, 0, 0);
+            d.setHours(d.getHours() + 1);
+            return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        function monthShortName(m) {
+            return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
+        }
+
+        function weekdayName(d) {
+            return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d];
+        }
+
+        const dateObj = toDateSafe(isoDate) || new Date(); // fallback today
+        const start = (startHM && /^\d{2}:\d{2}$/.test(startHM)) ? startHM : '12:00';
+        const end = (endHMParam && /^\d{2}:\d{2}$/.test(endHMParam)) ? endHMParam : addOneHour(start);
+
+        // Fill the pretty labels
+        const prettyDay = `${weekdayName(dateObj.getDay())}, ${monthShortName(dateObj.getMonth())} ${dateObj.getDate()}`;
+        document.getElementById('prettyDay').textContent = prettyDay;
+        document.getElementById('prettyTime').textContent = `${start} - ${end}`;
+
+        // Qty controls
+        const countInput = document.getElementById('count');
+        document.querySelector('.circle-btn.minus').addEventListener('click', () => {
+            let v = parseInt(countInput.value, 10) || 1;
+            if (v > 1) countInput.value = v - 1;
+        });
+        document.querySelector('.circle-btn.plus').addEventListener('click', () => {
+            let v = parseInt(countInput.value, 10) || 1;
+            countInput.value = v + 1;
+        });
+
+        // Voucher check
+        const VOUCHER_OK = "VC123";
+        const voucherInput = document.getElementById('voucher');
+        const voucherMsg = document.getElementById('voucherMsg');
+        const checkVoucherBtn = document.getElementById('checkVoucherBtn');
+
+        let voucherValid = false;
+
+        function showVoucher(status, text) {
+            voucherMsg.textContent = text;
+            voucherMsg.className = status ? 'ok' : 'err';
+        }
+
+        function checkVoucher() {
+            const code = voucherInput.value.trim();
+            if (code.length === 0) {
+                voucherValid = false;
+                showVoucher(false, 'Please enter a code.');
+                return;
+            }
+            if (code === VOUCHER_OK) {
+                voucherValid = true;
+                showVoucher(true, '✅ Voucher Applied');
+            } else {
+                voucherValid = false;
+                showVoucher(false, '❌ Invalid Voucher');
+            }
+        }
+
+        checkVoucherBtn.addEventListener('click', checkVoucher);
+        voucherInput.addEventListener('input', () => {
+            voucherValid = false;
+            voucherMsg.textContent = '';
+            voucherMsg.className = '';
+        });
+
+        // Handle submit (demo + re-validate voucher if provided)
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const data = Object.fromEntries(new FormData(e.target).entries());
+
+            // If a voucher is typed, it must be valid
+            if ((data.voucher || '').trim().length && !voucherValid) {
+                checkVoucher();
+                if (!voucherValid) return; // stop submit
+            }
+
+            const summary =
+                `Booking confirmed:\n` +
+                `Date: ${isoDate || `${dateObj.getFullYear()}-${pad(dateObj.getMonth()+1)}-${pad(dateObj.getDate())}`}\n` +
+                `Time: ${start} - ${end}\n` +
+                `Name: ${data.name || '-'}\n` +
+                `Email: ${data.email || '-'}\n` +
+                `Phone: ${data.phone || '-'}\n` +
+                `Jumlah Orang: ${data.count || '-'}\n` +
+                `Pet: ${data.pet || '-'}\n` +
+                `Voucher: ${data.voucher ? (voucherValid ? data.voucher + ' (valid)' : data.voucher + ' (invalid)') : '-'}`;
+
+            // TODO: send to backend / sheet / email
+            const overlay = document.getElementById('successOverlay');
+            const details = document.getElementById('successDetails');
+            const okBtn = document.getElementById('successOk');
+            const autoMsg = document.getElementById('autoMsg');
+
+            details.textContent = summary;
+            overlay.classList.add('show');
+
+            // Klik tombol untuk langsung kembali
+            okBtn.onclick = () => {
+                window.location.href = 'index.html';
+            };
+
+            // Auto-redirect setelah 2 detik
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 15000);
+        });
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', () => {
+            phoneInput.value = phoneInput.value.replace(/\D/g, ''); // hapus semua non-digit
+        });
+    </script>
+</body>
+
+</html>

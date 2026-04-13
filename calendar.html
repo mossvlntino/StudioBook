@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Say, Cheese! — Select Date</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page: #e9e4d7;
+            --card: #f6f4ee;
+            --ink: #0f0f0e;
+            --accent: #f5b51f;
+            --radius: 36px;
+            --circle: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            background: var(--page);
+            font-family: Inter, sans-serif;
+            color: var(--ink)
+        }
+
+        .shell {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 24px
+        }
+
+        .panel {
+            width: min(980px, 100%);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 0 #d2cdc2, 0 20px 40px rgba(0, 0, 0, .06);
+            padding: 36px;
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* back button (unchanged 3D look) */
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px
+        }
+
+        .back-btn {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #000;
+            transition: transform .05s ease, box-shadow .05s ease
+        }
+
+        .back-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #000
+        }
+
+        .content {
+            width: 100%;
+            display: flex;
+            gap: 20px
+        }
+
+        .side {
+            flex: 0 0 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            text-align: center
+        }
+
+        .side img {
+            width: 160px;
+            height: auto
+        }
+
+        .side h2 {
+            font-size: 22px;
+            font-weight: 800
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+
+        /* HEADER — flat Today + squircle arrows */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px
+        }
+
+        .today-btn {
+            background: var(--accent);
+            border: 2px solid #000;
+            border-radius: 8px;
+            /* squircle */
+            padding: 8px 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: none;
+            /* flat */
+        }
+
+        .today-btn:hover {
+            background: #f7c63c
+        }
+
+        .nav-group {
+            display: flex;
+            gap: 10px
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            /* squircle */
+            border: 2px solid #000;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 800
+        }
+
+        .nav-btn:hover {
+            background: #f2f2f2
+        }
+
+        .month-year {
+            font-weight: 800;
+            font-size: 36px;
+            text-align: center;
+            flex: 1
+        }
+
+        .weekday-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 18px;
+            width: 100%;
+            margin-bottom: 8px;
+            margin-top: 6px
+        }
+
+        .weekday {
+            font-weight: 600;
+            text-align: center;
+            font-size: 20px;
+            transform: translateY(6px)
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 18px;
+            width: 100%
+        }
+
+        .day,
+        .spacer {
+            width: var(--circle);
+            height: var(--circle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-inline: auto
+        }
+
+        .day {
+            border: 2px solid #000;
+            background: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s;
+            font-size: 16px
+        }
+
+        .day:hover {
+            background: #fff3c7
+        }
+
+        .day.active {
+            background: var(--accent)
+        }
+
+        .day.today {
+            background: var(--accent)
+        }
+
+        .day.disabled {
+            background: #e5e5e5;
+            color: #8a8a8a;
+            border-color: #bdbdbd;
+            pointer-events: none;
+            cursor: not-allowed
+        }
+
+        .spacer {
+            border: 2px solid transparent
+        }
+
+        @media (max-width: 760px) {
+            .month-year {
+                font-size: 28px
+            }
+
+            :root {
+                --circle: 52px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <main class="panel">
+            <div class="top-bar">
+                <button class="back-btn" onclick="window.location.href='index.html'">&larr; Back</button>
+            </div>
+
+            <div class="content">
+                <div class="side">
+                    <img src="Cheesecake.jpg" alt="cheese logo" />
+                    <h2>Time to <span style="color:var(--accent)">Book!</span></h2>
+                </div>
+
+                <div class="main">
+                    <div class="calendar-header">
+                        <button class="today-btn" id="todayBtn">Today</button>
+                        <div class="month-year" id="title">—</div>
+                        <div class="nav-group">
+                            <button class="nav-btn" id="prevBtn" aria-label="Previous month">‹</button>
+                            <button class="nav-btn" id="nextBtn" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+
+                    <div class="weekday-row">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+
+                    <div class="calendar-grid" id="calendar"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const titleEl = document.getElementById('title');
+        const gridEl = document.getElementById('calendar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const todayBtn = document.getElementById('todayBtn');
+
+        let view = new Date(); // current month shown
+
+        function pad(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function sod(d) {
+            const x = new Date(d);
+            x.setHours(0, 0, 0, 0);
+            return x;
+        }
+
+        function dim(y, m) {
+            return new Date(y, m + 1, 0).getDate();
+        }
+
+        function render() {
+            const y = view.getFullYear();
+            const m = view.getMonth();
+            const firstDow = new Date(y, m, 1).getDay(); // 0..6
+            const total = dim(y, m);
+            const today0 = sod(new Date());
+
+            // Month title (system locale month name)
+            titleEl.textContent = view.toLocaleString('default', {
+                month: 'long'
+            }) + ' ' + y;
+
+            gridEl.innerHTML = '';
+            const CELLS = 42; // 6 weeks
+            let dnum = 1;
+
+            for (let i = 0; i < CELLS; i++) {
+                if (i < firstDow || dnum > total) {
+                    const hole = document.createElement('div');
+                    hole.className = 'spacer';
+                    gridEl.appendChild(hole);
+                    continue;
+                }
+
+                const thisDate = sod(new Date(y, m, dnum));
+                const cell = document.createElement('div');
+                cell.className = 'day';
+                cell.textContent = dnum;
+
+                if (thisDate.getTime() === today0.getTime()) cell.classList.add('today');
+                if (thisDate < today0) {
+                    cell.classList.add('disabled');
+                } else {
+                    cell.addEventListener('click', () => {
+                        const iso = `${y}-${pad(m+1)}-${pad(dnum)}`;
+                        window.location.href = `time.html?date=${iso}`;
+                    });
+                }
+
+                gridEl.appendChild(cell);
+                dnum++;
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            view.setMonth(view.getMonth() - 1);
+            render();
+        });
+        nextBtn.addEventListener('click', () => {
+            view.setMonth(view.getMonth() + 1);
+            render();
+        });
+        todayBtn.addEventListener('click', () => {
+            view = new Date();
+            render();
+        });
+
+        render();
+    </script>
+</body>
+
+</html>

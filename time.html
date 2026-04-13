@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Say, Cheese! — Select Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page: #e9e4d7;
+            --card: #f6f4ee;
+            --ink: #0f0f0e;
+            --accent: #f5b51f;
+            --radius: 36px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            background: var(--page);
+            font-family: Inter, sans-serif;
+            color: var(--ink)
+        }
+
+        .wrap {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 24px
+        }
+
+        .card {
+            width: min(1120px, 100%);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 0 #d2cdc2, 0 20px 40px rgba(0, 0, 0, .06);
+            padding: clamp(20px, 3.6vw, 36px);
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+        }
+
+        /* left column */
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px
+        }
+
+        .logo {
+            width: 200px;
+            height: 160px;
+            background: #fff url('Cheesecake.jpg') center/cover no-repeat;
+            border-radius: 12px;
+            box-shadow: 0 1px 0 #d0ccc3
+        }
+
+        .brand h2 {
+            font-size: 28px;
+            font-weight: 800
+        }
+
+        .brand h2 span {
+            color: #e2a30e
+        }
+
+        .back-btn {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #000;
+            transition: transform .05s ease, box-shadow .05s ease;
+            margin-top: 10px
+        }
+
+        .back-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #000
+        }
+
+        /* header (matches your screenshot) */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .today {
+            background: var(--accent);
+            border: 2px solid #000;
+            border-radius: 8px;
+            /* squircle */
+            padding: 8px 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .today:hover {
+            background: #f7c63c;
+        }
+
+        .today:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #000;
+        }
+
+        .title {
+            font-weight: 800;
+            font-size: 28px
+        }
+
+        .arrows {
+            display: flex;
+            gap: 10px
+        }
+
+        .arrows button {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            /* squircle instead of full circle */
+            border: 2px solid #000;
+            background: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .arrows button:hover {
+            background: #f2f2f2;
+        }
+
+        /* week row */
+        .week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 18px;
+            margin-top: 20px;
+            align-items: end
+        }
+
+        .weekday {
+            font-weight: 800;
+            text-align: center
+        }
+
+        .bubble {
+            width: 56px;
+            height: 56px;
+            margin: 8px auto 0;
+            border-radius: 50%;
+            border: 2px solid #000;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            background: #fff;
+            cursor: pointer
+        }
+
+        .bubble.active {
+            background: var(--accent)
+        }
+
+        .bubble.disabled {
+            background: #e5e5e5;
+            color: #8a8a8a;
+            border-color: #bdbdbd;
+            pointer-events: none;
+            cursor: not-allowed
+        }
+
+        .divider {
+            border-bottom: 2px solid #1a1a1a40;
+            margin: 20px 0
+        }
+
+        /* time slots (scrollable) */
+        .slots {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0 6px;
+            max-height: 420px;
+            /* scroll container */
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .slot {
+            min-width: 280px;
+            max-width: 420px;
+            width: 60%;
+            padding: 14px 18px;
+            border: 2px solid #000;
+            border-radius: 30px;
+            font-weight: 800;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 1px 0 #00000020
+        }
+
+        .slot.active {
+            background: var(--accent)
+        }
+
+        .slot.disabled {
+            background: #e5e5e5;
+            color: #8a8a8a;
+            border-color: #bdbdbd;
+            pointer-events: none;
+            cursor: not-allowed
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 22px
+        }
+
+        .btn {
+            background: var(--accent);
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 14px 22px;
+            font-weight: 800;
+            box-shadow: 0 6px 0 #000;
+            cursor: pointer
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #000
+        }
+
+        @media (max-width: 900px) {
+            .card {
+                grid-template-columns: 1fr
+            }
+
+            .brand {
+                align-items: center
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="card">
+            <!-- left column -->
+            <aside class="brand">
+                <div class="logo" aria-label="cheese logo placeholder"></div>
+                <h2>Time to <span>Book!</span></h2>
+                <button class="back-btn" onclick="window.location.href='calendar.html'">← Back</button>
+            </aside>
+
+            <!-- right column -->
+            <section>
+                <header class="header">
+                    <button class="today" id="todayBtn">Today</button>
+                    <div class="title" id="title">—</div>
+                    <div class="arrows">
+                        <button id="prevBtn" aria-label="Previous month">‹</button>
+                        <button id="nextBtn" aria-label="Next month">›</button>
+                    </div>
+                </header>
+
+                <div class="week" id="weekRow">
+                    <div class="weekday">Sun<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Mon<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Tue<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Wed<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Thu<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Fri<div class="bubble"></div>
+                    </div>
+                    <div class="weekday">Sat<div class="bubble"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="slots" id="slots"></div>
+
+                <div class="actions">
+                    <button class="btn" id="confirmBtn">Book Session</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Parse ?date=YYYY-MM-DD
+        function parseISODate(iso) {
+            if (!iso) return null;
+            const m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.exec(iso);
+            if (!m) return null;
+            const y = +m[1],
+                mm = +m[2] - 1,
+                d = +m[3];
+            const dt = new Date(y, mm, d);
+            return (dt.getFullYear() === y && dt.getMonth() === mm && dt.getDate() === d) ? dt : null;
+        }
+
+        const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober',
+            'November', 'Desember'
+        ];
+        const params = new URLSearchParams(location.search);
+        let selectedDate = parseISODate(params.get('date')) || new Date();
+        let selectedTime = null;
+
+        const titleEl = document.getElementById('title');
+        const weekRow = document.getElementById('weekRow');
+        const slotsEl = document.getElementById('slots');
+
+        function startOfDay(d) {
+            const x = new Date(d);
+            x.setHours(0, 0, 0, 0);
+            return x;
+        }
+
+        function fmtTime(hhmm) {
+            const [H, M] = hhmm.split(':').map(Number);
+            return `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`;
+        }
+
+        function updateHeader() {
+            titleEl.textContent = `${MONTHS[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+        }
+
+        function renderWeek() {
+            const today0 = startOfDay(new Date());
+            const start = new Date(selectedDate);
+            start.setDate(selectedDate.getDate() - selectedDate.getDay());
+
+            const bubbles = weekRow.querySelectorAll('.bubble');
+            bubbles.forEach((b, i) => {
+                const d = new Date(start);
+                d.setDate(start.getDate() + i);
+                b.textContent = d.getDate();
+                b.classList.toggle('active', d.toDateString() === selectedDate.toDateString());
+
+                const d0 = startOfDay(d);
+                if (d0 < today0) {
+                    b.classList.add('disabled');
+                    b.onclick = null;
+                } else {
+                    b.classList.remove('disabled');
+                    b.onclick = () => {
+                        selectedDate = d;
+                        updateHeader();
+                        renderWeek();
+                        renderSlots(true);
+                    };
+                }
+            });
+        }
+
+        // Times from 08:00 → 21:00 (hourly)
+        function dayTimes() {
+            const arr = [];
+            for (let h = 8; h <= 21; h++) arr.push(`${String(h).padStart(2,'0')}:00`);
+            return arr;
+        }
+
+        function renderSlots(scrollToFirst = false) {
+            slotsEl.innerHTML = '';
+            const now = new Date();
+            const today0 = startOfDay(new Date());
+            const sel0 = startOfDay(selectedDate);
+
+            let firstEnabledBtn = null;
+
+            dayTimes().forEach(hm => {
+                const btn = document.createElement('button');
+                btn.className = 'slot';
+                btn.textContent = fmtTime(hm);
+
+                const [hh, mm] = hm.split(':').map(Number);
+                const slotDate = new Date(sel0);
+                slotDate.setHours(hh, mm, 0, 0);
+
+                const isPast = sel0 < today0 || (sel0.getTime() === today0.getTime() && slotDate < now);
+                if (isPast) {
+                    btn.classList.add('disabled');
+                } else {
+                    if (!firstEnabledBtn) firstEnabledBtn = btn;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.slot.active').forEach(x => x.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedTime = hm;
+                    };
+                }
+
+                slotsEl.appendChild(btn);
+            });
+
+            if (scrollToFirst && firstEnabledBtn) {
+                firstEnabledBtn.scrollIntoView({
+                    block: 'center',
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // controls
+        document.getElementById('todayBtn').onclick = () => {
+            selectedDate = new Date();
+            updateHeader();
+            renderWeek();
+            renderSlots(true);
+        };
+        document.getElementById('prevBtn').onclick = () => {
+            selectedDate.setMonth(selectedDate.getMonth() - 1);
+            updateHeader();
+            renderWeek();
+            renderSlots(true);
+        };
+        document.getElementById('nextBtn').onclick = () => {
+            selectedDate.setMonth(selectedDate.getMonth() + 1);
+            updateHeader();
+            renderWeek();
+            renderSlots(true);
+        };
+        document.getElementById('confirmBtn').onclick = () => {
+            if (!selectedTime) {
+                alert('Please choose a time.');
+                return;
+            }
+            const y = selectedDate.getFullYear();
+            const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const d = String(selectedDate.getDate()).padStart(2, '0');
+            location.href = `confirm.html?date=${y}-${m}-${d}&time=${selectedTime}`;
+        };
+
+        // init
+        updateHeader();
+        renderWeek();
+        renderSlots(true);
+    </script>
+</body>
+
+</html>
